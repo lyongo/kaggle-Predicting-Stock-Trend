@@ -1,242 +1,207 @@
-<div align="center">
-  <h2><b>Kronos: A Foundation Model for the Language of Financial Markets </b></h2>
-</div>
+# Kaggle股票趋势预测 - Kronos模型实现
 
 
-<div align="center">
+使用[Kronos](https://github.com/shiyu-coder/Kronos)模型参加Kaggle比赛 [Predicting Stock Trends: Rise or Fall](https://www.kaggle.com/competitions/predicting-stock-trends-rise-or-fall)。
 
-</a> 
-<a href="https://huggingface.co/NeoQuasar"> 
-<img src="https://img.shields.io/badge/🤗-Hugging_Face-yellow" alt="Hugging Face"> 
-</a> 
-<a href="https://shiyu-coder.github.io/Kronos-demo/"> <img src="https://img.shields.io/badge/🚀-Live_Demo-brightgreen" alt="Live Demo"> </a>
-<a href="https://github.com/shiyu-coder/Kronos/graphs/commit-activity"> 
-<img src="https://img.shields.io/github/last-commit/shiyu-coder/Kronos?color=blue" alt="Last Commit"> 
-</a> 
-<a href="https://github.com/shiyu-coder/Kronos/stargazers"> 
-<img src="https://img.shields.io/github/stars/shiyu-coder/Kronos?color=lightblue" alt="GitHub Stars"> 
-</a> 
-<a href="https://github.com/shiyu-coder/Kronos/network/members"> 
-<img src="https://img.shields.io/github/forks/shiyu-coder/Kronos?color=yellow" alt="GitHub Forks"> 
-</a> 
-<a href="./LICENSE"> 
-<img src="https://img.shields.io/github/license/shiyu-coder/Kronos?color=green" alt="License"> 
-</a>
+## 📋 目录
 
-</div>
+- [项目简介](#项目简介)
+- [快速开始](#快速开始)
+- [完整流程](#完整流程)
+- [项目结构](#项目结构)
+- [详细文档](#详细文档)
 
-<div align="center">
-  <!-- Keep these links. Translations will automatically update with the README. -->
-  <a href="https://zdoc.app/de/shiyu-coder/Kronos">Deutsch</a> | 
-  <a href="https://zdoc.app/es/shiyu-coder/Kronos">Español</a> | 
-  <a href="https://zdoc.app/fr/shiyu-coder/Kronos">Français</a> | 
-  <a href="https://zdoc.app/ja/shiyu-coder/Kronos">日本語</a> | 
-  <a href="https://zdoc.app/ko/shiyu-coder/Kronos">한국어</a> | 
-  <a href="https://zdoc.app/pt/shiyu-coder/Kronos">Português</a> | 
-  <a href="https://zdoc.app/ru/shiyu-coder/Kronos">Русский</a> | 
-  <a href="https://zdoc.app/zh/shiyu-coder/Kronos">中文</a>
-</div>
+## 🎯 项目简介
 
-<p align="center">
+本项目使用**Kronos**（一个金融时间序列基础模型）来预测股票价格的涨跌趋势。Kronos是一个专门为金融K线数据设计的大语言模型，能够有效捕捉时间序列中的长期依赖关系。
 
-<img src="./figures/logo.png" width="100">
+### 比赛信息
+- **比赛**: [Predicting Stock Trends: Rise or Fall](https://www.kaggle.com/competitions/predicting-stock-trends-rise-or-fall)
+- **任务类型**: 二分类（涨/跌预测）
+- **数据规模**: 5000个ticker，20M+行历史数据
+- **预测目标**: 预测下一个时间点的价格，转换为涨(1)/跌(0)分类
 
-</p>
+## 🚀 快速开始
 
-> Kronos is the **first open-source foundation model** for financial candlesticks (K-lines), 
-> trained on data from over **45 global exchanges**.
+### 方式1: 使用预训练模型（最快，无需训练）
 
-
-</div>
-
-## 📰 News
-*   🚩 **[2025.11.10]** Kronos has been accpeted by AAAI 2026.
-*   🚩 **[2025.08.17]** We have released the scripts for fine-tuning! Check them out to adapt Kronos to your own tasks.
-*   🚩 **[2025.08.02]** Our paper is now available on [arXiv](https://arxiv.org/abs/2508.02739)!
-
-<p align="center">
-
-## 📜 Introduction
-
-**Kronos** is a family of decoder-only foundation models, pre-trained specifically for the "language" of financial markets—K-line sequences. Unlike general-purpose TSFMs, Kronos is designed to handle the unique, high-noise characteristics of financial data. It leverages a novel two-stage framework: 
-1. A specialized tokenizer first quantizes continuous, multi-dimensional K-line data (OHLCV) into **hierarchical discrete tokens**. 
-2. A large, autoregressive Transformer is then pre-trained on these tokens, enabling it to serve as a unified model for diverse quantitative tasks.
-
-<p align="center">
-    <img src="figures/overview.png" alt="" align="center" width="700px" />
-</p>
-
-## ✨ Live Demo 
-We have set up a live demo to visualize Kronos's forecasting results. The webpage showcases a forecast for the **BTC/USDT** trading pair over the next 24 hours. 
-
-**👉 [Access the Live Demo Here](https://shiyu-coder.github.io/Kronos-demo/)** 
-
-## 📦 Model Zoo 
-We release a family of pre-trained models with varying capacities to suit different computational and application needs. All models are readily accessible from the Hugging Face Hub.
-
-| Model        | Tokenizer                                                                       | Context length | Params  | Open-source                                                               |
-|--------------|---------------------------------------------------------------------------------| -------------- | ------ |---------------------------------------------------------------------------|
-| Kronos-mini  | [Kronos-Tokenizer-2k](https://huggingface.co/NeoQuasar/Kronos-Tokenizer-2k)     | 2048           | 4.1M   | ✅ [NeoQuasar/Kronos-mini](https://huggingface.co/NeoQuasar/Kronos-mini)  |
-| Kronos-small | [Kronos-Tokenizer-base](https://huggingface.co/NeoQuasar/Kronos-Tokenizer-base) | 512            | 24.7M  | ✅ [NeoQuasar/Kronos-small](https://huggingface.co/NeoQuasar/Kronos-small) |
-| Kronos-base  | [Kronos-Tokenizer-base](https://huggingface.co/NeoQuasar/Kronos-Tokenizer-base) | 512            | 102.3M | ✅ [NeoQuasar/Kronos-base](https://huggingface.co/NeoQuasar/Kronos-base)   |
-| Kronos-large | [Kronos-Tokenizer-base](https://huggingface.co/NeoQuasar/Kronos-Tokenizer-base) | 512            | 499.2M | ❌                                                                         |
-
-
-## 🚀 Getting Started
-
-### Installation
-
-1. Install Python 3.10+, and then install the dependencies:
-
-```shell
-pip install -r requirements.txt
+```bash
+cd kaggle
+python run_pretrained_inference.py
 ```
 
-### 📈 Making Forecasts
+这会自动完成推理并生成提交文件，约需10-30分钟。
 
-Forecasting with Kronos is straightforward using the `KronosPredictor` class. It handles data preprocessing, normalization, prediction, and inverse normalization, allowing you to get from raw data to forecasts in just a few lines of code.
+### 方式2: 微调后使用（推荐，效果更好）
 
-**Important Note**: The `max_context` for `Kronos-small` and `Kronos-base` is **512**. This is the maximum sequence length the model can process. For optimal performance, it is recommended that your input data length (i.e., `lookback`) does not exceed this limit. The `KronosPredictor` will automatically handle truncation for longer contexts.
+```bash
+# 1. 数据预处理
+cd kaggle
+python kaggle_data_preprocess.py
 
-Here is a step-by-step guide to making your first forecast.
+# 2. 训练模型
+bash train_kaggle.sh --multi-gpu 8
 
-#### 1. Load the Tokenizer and Model
-
-First, load a pre-trained Kronos model and its corresponding tokenizer from the Hugging Face Hub.
-
-```python
-from model import Kronos, KronosTokenizer, KronosPredictor
-
-# Load from Hugging Face Hub
-tokenizer = KronosTokenizer.from_pretrained("NeoQuasar/Kronos-Tokenizer-base")
-model = Kronos.from_pretrained("NeoQuasar/Kronos-small")
+# 3. 推理和提交
+python kaggle_inference.py
+python generate_submission.py
 ```
 
-#### 2. Instantiate the Predictor
+## 📝 完整流程
 
-Create an instance of `KronosPredictor`, passing the model, tokenizer, and desired device.
+### 步骤1: 下载Kaggle数据
 
-```python
-# Initialize the predictor
-predictor = KronosPredictor(model, tokenizer, device="cuda:0", max_context=512)
+1. 访问 [Kaggle比赛页面](https://www.kaggle.com/competitions/predicting-stock-trends-rise-or-fall/data)
+2. 下载以下文件：
+   - `train.csv` - 训练数据（包含历史价格数据）
+   - `test.csv` - 测试数据（包含需要预测的样本）
+3. 将数据保存到指定目录（默认：`/path/to/dataset/predicting-stock-trends-rise-or-fall/`）
+
+**数据格式**:
+- `train.csv`: 包含 `Ticker`, `Date`, `Open`, `High`, `Low`, `Close`, `Volume`, `Dividends`, `Stock Splits`
+- `test.csv`: 包含 `ID`, `Date`
+
+### 步骤2: 数据预处理
+
+将Kaggle数据转换为Kronos模型所需的格式：
+
+```bash
+cd kaggle
+python kaggle_data_preprocess.py
 ```
 
-#### 3. Prepare Input Data
+**输出**:
+- `kaggle_data/train/` - 按ticker分组的训练数据（每个ticker一个CSV文件）
+- `kaggle_data/test/` - 测试数据
+- `kaggle_data/train_combined.csv` - 合并的训练数据（用于微调）
+- `kaggle_data/test_ticker_info.csv` - 测试集元数据
 
-The `predict` method requires three main inputs:
--   `df`: A pandas DataFrame containing the historical K-line data. It must include columns `['open', 'high', 'low', 'close']`. `volume` and `amount` are optional.
--   `x_timestamp`: A pandas Series of timestamps corresponding to the historical data in `df`.
--   `y_timestamp`: A pandas Series of timestamps for the future periods you want to predict.
-
-```python
-import pandas as pd
-
-# Load your data
-df = pd.read_csv("./data/XSHG_5min_600977.csv")
-df['timestamps'] = pd.to_datetime(df['timestamps'])
-
-# Define context window and prediction length
-lookback = 400
-pred_len = 120
-
-# Prepare inputs for the predictor
-x_df = df.loc[:lookback-1, ['open', 'high', 'low', 'close', 'volume', 'amount']]
-x_timestamp = df.loc[:lookback-1, 'timestamps']
-y_timestamp = df.loc[lookback:lookback+pred_len-1, 'timestamps']
+**数据格式验证**:
+```bash
+python validate_data_format.py
 ```
 
-#### 4. Generate Forecasts 
+### 步骤3: 模型训练（可选）
 
-Call the `predict` method to generate forecasts. You can control the sampling process with parameters like `T`, `top_p`, and `sample_count` for probabilistic forecasting.
+#### 3.1 快速验证（1-2小时）
 
-```python
-# Generate predictions
-pred_df = predictor.predict(
-    df=x_df,
-    x_timestamp=x_timestamp,
-    y_timestamp=y_timestamp,
-    pred_len=pred_len,
-    T=1.0,          # Temperature for sampling
-    top_p=0.9,      # Nucleus sampling probability
-    sample_count=1  # Number of forecast paths to generate and average
-)
+用于验证流程是否正确：
 
-print("Forecasted Data Head:")
-print(pred_df.head())
+```bash
+bash train_kaggle.sh --config kaggle_config_stage1.yaml
 ```
 
-The `predict` method returns a pandas DataFrame containing the forecasted values for `open`, `high`, `low`, `close`, `volume`, and `amount`, indexed by the `y_timestamp` you provided.
+#### 3.2 标准训练（4-8小时，单GPU）
 
-For efficient processing of multiple time series, Kronos provides a `predict_batch` method that enables parallel prediction on multiple datasets simultaneously. This is particularly useful when you need to forecast multiple assets or time periods at once.
-
-```python
-# Prepare multiple datasets for batch prediction
-df_list = [df1, df2, df3]  # List of DataFrames
-x_timestamp_list = [x_ts1, x_ts2, x_ts3]  # List of historical timestamps
-y_timestamp_list = [y_ts1, y_ts2, y_ts3]  # List of future timestamps
-
-# Generate batch predictions
-pred_df_list = predictor.predict_batch(
-    df_list=df_list,
-    x_timestamp_list=x_timestamp_list,
-    y_timestamp_list=y_timestamp_list,
-    pred_len=pred_len,
-    T=1.0,
-    top_p=0.9,
-    sample_count=1,
-    verbose=True
-)
-
-# pred_df_list contains prediction results in the same order as input
-for i, pred_df in enumerate(pred_df_list):
-    print(f"Predictions for series {i}:")
-    print(pred_df.head())
+```bash
+bash train_kaggle.sh
 ```
 
-**Important Requirements for Batch Prediction:**
-- All series must have the same historical length (lookback window)
-- All series must have the same prediction length (`pred_len`)
-- Each DataFrame must contain the required columns: `['open', 'high', 'low', 'close']`
-- `volume` and `amount` columns are optional and will be filled with zeros if missing
+#### 3.3 多GPU训练（推荐，30-60分钟）
 
-The `predict_batch` method leverages GPU parallelism for efficient processing and automatically handles normalization and denormalization for each series independently.
+```bash
+bash train_kaggle.sh --multi-gpu 8
+```
 
-#### 5. Example and Visualization
+#### 3.4 精细微调（如果标准训练效果不理想）
 
-For a complete, runnable script that includes data loading, prediction, and plotting, please see [`examples/prediction_example.py`](examples/prediction_example.py).
+```bash
+bash train_kaggle.sh --config kaggle_config_stage3.yaml --multi-gpu 8
+```
 
-Running this script will generate a plot comparing the ground truth data against the model's forecast, similar to the one shown below:
+**训练配置说明**:
+- `kaggle_config_stage1.yaml`: 快速验证（减少epoch）
+- `kaggle_config.yaml`: 标准训练（推荐）
+- `kaggle_config_stage3.yaml`: 精细微调（降低学习率，增加epoch）
 
-<p align="center">
-    <img src="figures/prediction_example.png" alt="Forecast Example" align="center" width="600px" />
-</p>
+### 步骤4: 推理
 
-Additionally, we provide a script that makes predictions without Volume and Amount data, which can be found in [`examples/prediction_wo_vol_example.py`](examples/prediction_wo_vol_example.py).
+#### 使用预训练模型
 
+```bash
+cd kaggle
+python kaggle_inference_pretrained.py
+```
 
-## 🔧 Finetuning on Your Own Data (A-Share Market Example)
+**输出**: `kaggle_predictions_pretrained.csv`
+
+#### 使用微调模型
+
+```bash
+python kaggle_inference.py
+```
+
+**输出**: `kaggle_predictions.csv`
+
+### 步骤5: 生成提交文件
+
+#### 使用预训练模型结果
+
+```bash
+python generate_submission.py \
+    --predictions ../kaggle_predictions_pretrained.csv \
+    --test_csv /path/to/test.csv \
+    --output ../kaggle_submission_pretrained.csv
+```
+
+#### 使用微调模型结果
+
+```bash
+python generate_submission.py \
+    --predictions ../kaggle_predictions.csv \
+    --test_csv /path/to/test.csv \
+    --output ../kaggle_submission.csv
+```
+
+### 步骤6: 提交到Kaggle
+
+将生成的提交文件（`kaggle_submission.csv` 或 `kaggle_submission_pretrained.csv`）上传到 [Kaggle比赛页面](https://www.kaggle.com/competitions/predicting-stock-trends-rise-or-fall/submit) 进行提交。
+
+## 📁 项目结构
+
+```
+Kronos/
+├── kaggle/                        # Kaggle比赛相关脚本
+│   ├── kaggle_data_preprocess.py  # 数据预处理脚本
+│   ├── kaggle_config.yaml         # 标准微调配置
+│   ├── kaggle_config_stage1.yaml  # 快速验证配置
+│   ├── kaggle_config_stage3.yaml  # 精细微调配置
+│   ├── kaggle_inference.py        # 微调模型推理脚本
+│   ├── kaggle_inference_pretrained.py  # 预训练模型推理脚本
+│   ├── generate_submission.py     # 提交文件生成脚本
+│   ├── train_kaggle.sh            # 训练启动脚本
+│   ├── validate_data_format.py    # 数据格式验证脚本
+│   ├── run_pretrained_inference.py # 一键推理+提交脚本
+│   ├── COMPLETE_GUIDE.md          # 完整指南
+│   ├── KAGGLE_FINETUNING_GUIDE.md # 微调指南
+│   └── KAGGLE_README.md           # 快速开始指南
+├── kaggle_data/                   # 处理后的数据（不包含在仓库中）
+├── kaggle_finetuned/              # 微调后的模型（不包含在仓库中）
+├── finetune_csv/                  # Kronos微调框架
+└── model/                         # Kronos模型代码
+```
+
+## 📚 详细文档
+
+### 核心文档
 
 We provide a complete pipeline for finetuning Kronos on your own datasets. As an example, we demonstrate how to use [Qlib](https://github.com/microsoft/qlib) to prepare data from the Chinese A-share market and conduct a simple backtest.
 
-> **Disclaimer:** This pipeline is intended as a demonstration to illustrate the finetuning process. It is a simplified example and not a production-ready quantitative trading system. A robust quantitative strategy requires more sophisticated techniques, such as portfolio optimization and risk factor neutralization, to achieve stable alpha.
+- **[kaggle/KAGGLE_FINETUNING_GUIDE.md](kaggle/KAGGLE_FINETUNING_GUIDE.md)** - Kaggle比赛专门微调指南
+  - 针对二分类任务的特殊建议
+  - 多ticker数据处理策略
+  - 参数调整详细说明
+  - 训练策略和最佳实践
 
-The finetuning process is divided into four main steps:
+- **[kaggle/KAGGLE_README.md](kaggle/KAGGLE_README.md)** - 快速开始指南
 
-1.  **Configuration**: Set up paths and hyperparameters.
-2.  **Data Preparation**: Process and split your data using Qlib.
-3.  **Model Finetuning**: Finetune the Tokenizer and the Predictor models.
-4.  **Backtesting**: Evaluate the finetuned model's performance.
+## ⚙️ 环境要求
 
-### Prerequisites
+### 依赖
 
-1.  First, ensure you have all dependencies from `requirements.txt` installed.
-2.  This pipeline relies on `qlib`. Please install it:
-    ```shell
-      pip install pyqlib
-    ```
-3.  You will need to prepare your Qlib data. Follow the [official Qlib guide](https://github.com/microsoft/qlib) to download and set up your data locally. The example scripts assume you are using daily frequency data.
-
-### Step 1: Configure Your Experiment
+```bash
+pip install -r requirements.txt
+```
 
 All settings for data, training, and model paths are centralized in `finetune/config.py`. Before running any scripts, please **modify the following paths** according to your environment:
 
@@ -246,45 +211,56 @@ All settings for data, training, and model paths are centralized in `finetune/co
 *   `backtest_result_path`: Directory for saving backtesting results.
 *   `pretrained_tokenizer_path` and `pretrained_predictor_path`: Paths to the pre-trained models you want to start from (can be local paths or Hugging Face model names).
 
-You can also adjust other parameters like `instrument`, `train_time_range`, `epochs`, and `batch_size` to fit your specific task. If you don't use [Comet.ml](https://www.comet.com/), set `use_comet = False`.
+需要下载Kronos预训练模型：
+- Tokenizer: `/path/to/Kronos-Tokenizer-base`
+- Model: `/path/to/Kronos-base`
 
-### Step 2: Prepare the Dataset
+在配置文件中更新模型路径（`kaggle/kaggle_config.yaml`）。
 
-Run the data preprocessing script. This script will load raw market data from your Qlib directory, process it, split it into training, validation, and test sets, and save them as pickle files.
+### 硬件要求
 
 ```shell
 python finetune/qlib_data_preprocess.py
 ```
 
-After running, you will find `train_data.pkl`, `val_data.pkl`, and `test_data.pkl` in the directory specified by `dataset_path` in your config.
+## 🔧 配置说明
 
-### Step 3: Run the Finetuning
+### 训练配置
 
-The finetuning process consists of two stages: finetuning the tokenizer and then the predictor. Both training scripts are designed for multi-GPU training using `torchrun`.
+编辑 `kaggle/kaggle_config.yaml` 设置：
 
-#### 3.1 Finetune the Tokenizer
+```yaml
+data:
+  data_path: "/path/to/train_combined.csv"
+  lookback_window: 256      # 历史窗口长度
+  predict_window: 1         # 预测窗口
+  train_ratio: 0.9          # 训练集比例
+  val_ratio: 0.1            # 验证集比例
 
-This step adjusts the tokenizer to the data distribution of your specific domain.
+training:
+  tokenizer_epochs: 20      # Tokenizer训练轮数
+  basemodel_epochs: 15      # Basemodel训练轮数
+  batch_size: 32             # 批次大小
+  tokenizer_learning_rate: 0.0002
+  predictor_learning_rate: 0.00004
 
-```shell
-# Replace NUM_GPUS with the number of GPUs you want to use (e.g., 2)
-torchrun --standalone --nproc_per_node=NUM_GPUS finetune/train_tokenizer.py
+model_paths:
+  pretrained_tokenizer: "/path/to/Kronos-Tokenizer-base"
+  pretrained_predictor: "/path/to/Kronos-base"
 ```
 
-The best tokenizer checkpoint will be saved to the path configured in `config.py` (derived from `save_path` and `tokenizer_save_folder_name`).
+详细配置说明请参考 [kaggle/COMPLETE_GUIDE.md](kaggle/COMPLETE_GUIDE.md)。
 
-#### 3.2 Finetune the Predictor
+## 💡 使用建议
 
-This step finetunes the main Kronos model for the forecasting task.
+### 首次使用
 
-```shell
-# Replace NUM_GPUS with the number of GPUs you want to use (e.g., 2)
-torchrun --standalone --nproc_per_node=NUM_GPUS finetune/train_predictor.py
-```
+1. **快速验证**: 使用预训练模型快速提交，获得baseline分数
+2. **数据验证**: 运行 `validate_data_format.py` 确保数据格式正确
+3. **标准训练**: 使用标准配置进行训练
+4. **精细调优**: 根据结果调整超参数
 
-The best predictor checkpoint will be saved to the path configured in `config.py`.
-
-### Step 4: Evaluate with Backtesting
+### 训练策略
 
 Finally, run the backtesting script to evaluate your finetuned model. This script loads the models, performs inference on the test set, generates prediction signals (e.g., forecasted price change), and runs a simple top-K strategy backtest.
 
@@ -299,38 +275,29 @@ The script will output a detailed performance analysis in your console and gener
     <img src="figures/backtest_result_example.png" alt="Backtest Example" align="center" width="700px" />
 </p>
 
-### 💡 From Demo to Production: Important Considerations
+更多问题请参考 [kaggle/COMPLETE_GUIDE.md](kaggle/COMPLETE_GUIDE.md) 中的常见问题部分。
 
-*   **Raw Signals vs. Pure Alpha**: The signals generated by the model in this demo are raw predictions. In a real-world quantitative workflow, these signals would typically be fed into a portfolio optimization model. This model would apply constraints to neutralize exposure to common risk factors (e.g., market beta, style factors like size and value), thereby isolating the **"pure alpha"** and improving the strategy's robustness.
-*   **Data Handling**: The provided `QlibDataset` is an example. For different data sources or formats, you will need to adapt the data loading and preprocessing logic.
-*   **Strategy and Backtesting Complexity**: The simple top-K strategy used here is a basic starting point. Production-level strategies often incorporate more complex logic for portfolio construction, dynamic position sizing, and risk management (e.g., stop-loss/take-profit rules). Furthermore, a high-fidelity backtest should meticulously model transaction costs, slippage, and market impact to provide a more accurate estimate of real-world performance.
+## 📊 性能参考
 
-> **📝 AI-Generated Comments**: Please note that many of the code comments within the `finetune/` directory were generated by an AI assistant (Gemini 2.5 Pro) for explanatory purposes. While they aim to be helpful, they may contain inaccuracies. We recommend treating the code itself as the definitive source of logic.
+### 训练时间估算
 
-## 📖 Citation
+| 配置 | 单GPU | 8 GPU |
+|------|-------|-------|
+| 快速验证 | 1-2小时 | 10-20分钟 |
+| 标准训练 | 4-8小时 | 30-60分钟 |
+| 精细微调 | 6-12小时 | 1-2小时 |
 
-If you use Kronos in your research, we would appreciate a citation to our [paper](https://arxiv.org/abs/2508.02739):
+### 推理时间
 
-```
-@misc{shi2025kronos,
-      title={Kronos: A Foundation Model for the Language of Financial Markets}, 
-      author={Yu Shi and Zongliang Fu and Shuo Chen and Bohan Zhao and Wei Xu and Changshui Zhang and Jian Li},
-      year={2025},
-      eprint={2508.02739},
-      archivePrefix={arXiv},
-      primaryClass={q-fin.ST},
-      url={https://arxiv.org/abs/2508.02739}, 
-}
-```
-
-## 📜 License 
-This project is licensed under the [MIT License](./LICENSE).
+- 约5000个样本，单GPU预计10-30分钟
 
 
+本项目基于Kronos项目，请参考 [LICENSE](LICENSE) 文件。
 
+## 🙏 致谢
 
-
-
+- [Kronos](https://github.com/shiyu-coder/Kronos) - 金融时间序列基础模型
+- [Kaggle](https://www.kaggle.com/competitions/predicting-stock-trends-rise-or-fall) - 比赛平台
 
 
 
