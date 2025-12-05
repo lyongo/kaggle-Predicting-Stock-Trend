@@ -1,0 +1,52 @@
+# Kaggle股票趋势预测比赛配置文件 - 阶段3: 精细微调
+# 用于优化模型性能，提高准确率
+
+data:
+  data_path: "/mnt/shared-storage-user/zhaoliangliang/code/Kronos/kaggle_data/train_combined.csv"
+  lookback_window: 256
+  predict_window: 1
+  max_context: 512
+  clip: 5.0
+  train_ratio: 0.9
+  val_ratio: 0.1
+  test_ratio: 0.0
+
+training:
+  # 精细微调：增加训练轮数，降低学习率
+  tokenizer_epochs: 30      # 从20增加到30
+  basemodel_epochs: 20      # 从15增加到20
+  batch_size: 64            # 从32增加到64（如果GPU内存允许）
+  log_interval: 50
+  num_workers: 8            # 从4增加到8
+  seed: 42
+  
+  tokenizer_learning_rate: 0.0001   # 从0.0002降低到0.0001
+  predictor_learning_rate: 0.00002  # 从0.00004降低到0.00002
+  
+  adam_beta1: 0.9
+  adam_beta2: 0.95
+  adam_weight_decay: 0.15   # 从0.1增加到0.15（防止过拟合）
+  accumulation_steps: 2     # 从1增加到2（梯度累积）
+
+model_paths:
+  pretrained_tokenizer: "/mnt/shared-storage-user/zhaoliangliang/model/Kronos-Tokenizer-base"
+  pretrained_predictor: "/mnt/shared-storage-user/zhaoliangliang/model/Kronos-base"
+  exp_name: "kaggle_stock_trends_stage3"
+  base_path: "/mnt/shared-storage-user/zhaoliangliang/code/Kronos/kaggle_finetuned/"
+  base_save_path: ""
+  finetuned_tokenizer: ""
+  tokenizer_save_name: "tokenizer"
+  basemodel_save_name: "basemodel"
+
+experiment:
+  name: "kaggle_stock_trends_finetune_stage3"
+  description: "精细微调：Kronos for Kaggle stock trends prediction"
+  use_comet: false
+  train_tokenizer: true
+  train_basemodel: true
+  skip_existing: false
+
+device:
+  use_cuda: true
+  device_id: 0
+
